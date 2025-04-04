@@ -22,8 +22,12 @@ function App() {
   const [bad, setBad] = useState(0)
 
 
-  let sum = good+neutral+bad;
-  let average = good+neutral+bad
+  let total = good+neutral+bad;
+  let average = total > 0 ? ((good * 1) + (neutral * 0) + (bad * -1))/total : 0;
+
+  let positivePercentage = total > 0 ? (good / total) * 100 : 0;
+
+
   return (
     <>
       <h1>Give feedback</h1>
@@ -41,10 +45,11 @@ function App() {
       <div >
         good {good}<br/>
         neutral {neutral}<br/>
-        bad {bad}
+        bad {bad}<br/>
 
-        all {}
-        average {}
+        all {total}<br/>
+        average {average}<br/>
+        positive {positivePercentage}<br/>
       </div>
 
     </>
