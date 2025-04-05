@@ -4,8 +4,13 @@ import "./app.css";
 const StatisticLine = ({ text, value }) => {
   return (
     <>
-      {text} {value}
-      <br />
+    <tr>
+      <td>{text}</td>
+      <td>{value}</td>
+    </tr>
+      
+      
+      
     </>
   );
 };
@@ -33,14 +38,14 @@ const Statistics = ({ good, neutral, bad }) => {
       <h1>Stastistics</h1>
 
       {good || neutral || bad ? (
-        <div>
+        <table>
           <StatisticLine text="good" value={good} />
           <StatisticLine text="neutral" value={neutral} />
           <StatisticLine text="bad" value={bad} />
           <StatisticLine text="all" value={total} />
           <StatisticLine text="average" value={average} />
           <StatisticLine text="positive" value={positivePercentage} />
-        </div>
+        </table>
       ) : (
         <p>No feedback given</p>
       )}
