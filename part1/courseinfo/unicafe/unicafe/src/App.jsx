@@ -1,6 +1,27 @@
 import { useState } from "react";
 import "./app.css";
 
+const StatisticLine = ({ text, value }) => {
+  return (
+    <>
+      {text} {value}
+      <br />
+    </>
+  );
+};
+
+const Button = ({ text, setValue }) => {
+  return (
+    <button
+      onClick={() => {
+        setValue((prev) => prev + 1);
+      }}
+    >
+      {text}
+    </button>
+  );
+};
+
 const Statistics = ({ good, neutral, bad }) => {
   let total = good + neutral + bad;
   let average = total > 0 ? (good * 1 + neutral * 0 + bad * -1) / total : 0;
@@ -13,18 +34,12 @@ const Statistics = ({ good, neutral, bad }) => {
 
       {good || neutral || bad ? (
         <div>
-          good {good}
-          <br />
-          neutral {neutral}
-          <br />
-          bad {bad}
-          <br />
-          all {total}
-          <br />
-          average {average}
-          <br />
-          positive {positivePercentage}
-          <br />
+          <StatisticLine text="good" value={good} />
+          <StatisticLine text="neutral" value={neutral} />
+          <StatisticLine text="bad" value={bad} />
+          <StatisticLine text="all" value={total} />
+          <StatisticLine text="average" value={average} />
+          <StatisticLine text="positive" value={positivePercentage} />
         </div>
       ) : (
         <p>No feedback given</p>
@@ -41,30 +56,10 @@ function App() {
   return (
     <>
       <h1>Give feedback</h1>
-
       <div>
-        <button
-          onClick={() => {
-            setGood((prev) => prev + 1);
-          }}
-        >
-          good
-        </button>
-
-        <button
-          onClick={() => {
-            setNeutral((prev) => prev + 1);
-          }}
-        >
-          neutral{" "}
-        </button>
-        <button
-          onClick={() => {
-            setBad((prev) => prev + 1);
-          }}
-        >
-          bad
-        </button>
+        <Button text={"good"} setValue={setGood} />
+        <Button text={"neutral"} setValue={setNeutral} />
+        <Button text={"bad"} setValue={setBad} />
       </div>
 
       <Statistics good={good} neutral={neutral} bad={bad} />
