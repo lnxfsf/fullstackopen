@@ -16,10 +16,11 @@ function App() {
 
   const [votes, setVotes] = useState(new Array(anecdotes.length).fill(0));
 
-  console.log(votes);
+  const mostVotes = Math.max(...votes);
 
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       {anecdotes[selected]}
       <br />
       has {votes[selected]} votes
@@ -41,6 +42,8 @@ function App() {
       >
         next anecdote
       </button>
+      <h1>Anecdote with most votes</h1>
+      <p>{anecdotes[votes.indexOf(mostVotes)]}</p>
     </div>
   );
 }
