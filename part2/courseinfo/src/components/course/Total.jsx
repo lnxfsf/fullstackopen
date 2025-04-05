@@ -3,7 +3,7 @@ const Total = ({ parts }) => {
     return sum + item.exercises;
   }, 0);
 
-  return <p>Number of exercises {total}</p>;
+  return <p><b>total of {total} exercises</b></p>;
 };
 
 export default Total;
