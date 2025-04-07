@@ -13,7 +13,7 @@ const App = () => {
   const [filterValue, setFilterValue] = useState("");
 
   useEffect(() => {
-    personService.getAll().then(res => setPersons(res));
+    personService.getAll().then((res) => setPersons(res));
   }, []);
 
   const addContact = (event) => {
@@ -31,11 +31,9 @@ const App = () => {
     ) {
       alert(`${newName} is already added to phonebook`);
     } else {
-      // add persons in backend
-      personService.create(newObject).then(res => setPersons([...persons, { name: res.name, number: res.number }]));
-
-        //
-      
+      personService
+        .create(newObject)
+        .then((res) => setPersons([...persons, { ...res }]));
     }
   };
 
@@ -53,7 +51,11 @@ const App = () => {
         setNewPhone={setNewPhone}
       />
 
-      <Persons persons={persons} filterValue={filterValue} />
+      <Persons
+        persons={persons}
+        setPersons={setPersons}
+        filterValue={filterValue}
+      />
     </div>
   );
 };

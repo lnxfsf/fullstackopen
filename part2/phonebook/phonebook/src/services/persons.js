@@ -16,8 +16,13 @@ const update = (id, newObject) => {
   return request.then((res) => res.data);
 };
 
+const deleteUser = (id) => {
+  return axios.delete(`${baseUrl}/${id}`);
+};
+
 export default {
   getAll: getAll,
   create: create,
   update: update,
+  deleteUser: deleteUser,
 };

@@ -1,15 +1,38 @@
-const Persons = ({persons, filterValue}) => {
+import personService from "../services/persons";
 
-    return (<>
-    
-    <h2>Numbers</h2>
+const Persons = ({ persons, filterValue, setPersons }) => {
+  return (
+    <>
+      <h2>Numbers</h2>
       <div>
-        {persons?.filter(item => item.name.toLowerCase().includes(filterValue.toLowerCase())).map((item, index) => {
-          return <p key={item.name} style={{margin: 0}}>{item.name} {item.number}</p>;
-        })}
+        {persons
+          ?.filter((item) =>
+            item.name.toLowerCase().includes(filterValue.toLowerCase())
+          )
+          .map((item, index) => {
+            return (
+              <div
+                key={item.name}
+                style={{ display: "flex", gap: "15px", paddingTop: "5px" }}
+              >
+                <p style={{ margin: 0 }}>
+                  {item.name} {item.number}
+                </p>{" "}
+                <button
+                  onClick={() => {
+                    personService.deleteUser(item.id).then((res) => {
+                      setPersons(persons?.filter((i) => i.id !== item.id));
+                    });
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
+            );
+          })}
       </div>
-      </>)
-}
+    </>
+  );
+};
 
-
-export default Persons
+export default Persons;

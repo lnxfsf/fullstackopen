@@ -1,7 +1,13 @@
-const PersonForm = ({addContact, newName, setNewName, newPhone, setNewPhone}) => {
-
-    return (<>
-    <h2>Add a new</h2>
+const PersonForm = ({
+  addContact,
+  newName,
+  setNewName,
+  newPhone,
+  setNewPhone,
+}) => {
+  return (
+    <>
+      <h2>Add a new</h2>
       <form onSubmit={addContact}>
         <div>
           name:{" "}
@@ -11,25 +17,24 @@ const PersonForm = ({addContact, newName, setNewName, newPhone, setNewPhone}) =>
               setNewName(event.target.value);
             }}
           />
-
         </div>
 
         <div>
-        number:{" "}
+          number:{" "}
           <input
             value={newPhone}
             onChange={(event) => {
               setNewPhone(event.target.value);
             }}
           />
-          
         </div>
-
 
         <div>
           <button type="submit">add</button>
         </div>
-      </form></>)
-}
+      </form>
+    </>
+  );
+};
 
-export default PersonForm
+export default PersonForm;
