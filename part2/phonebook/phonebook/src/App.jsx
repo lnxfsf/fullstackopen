@@ -4,6 +4,8 @@ import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import axios from "axios";
 
+import personService from "./services/persons";
+
 const App = () => {
   const [persons, setPersons] = useState();
   const [newName, setNewName] = useState("");
@@ -11,13 +13,16 @@ const App = () => {
   const [filterValue, setFilterValue] = useState("");
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/persons")
-      .then((res) => setPersons(res.data));
+    personService.getAll().then(res => setPersons(res));
   }, []);
 
   const addContact = (event) => {
     event.preventDefault();
+
+    const newObject = {
+      name: newName,
+      number: newPhone,
+    };
 
     if (
       persons.find((item) => {
@@ -26,7 +31,11 @@ const App = () => {
     ) {
       alert(`${newName} is already added to phonebook`);
     } else {
-      setPersons([...persons, { name: newName, number: newPhone }]);
+      // add persons in backend
+      personService.create(newObject).then(res => setPersons([...persons, { name: res.name, number: res.number }]));
+
+        //
+      
     }
   };
 
