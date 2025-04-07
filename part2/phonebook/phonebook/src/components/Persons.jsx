@@ -4,7 +4,7 @@ const Persons = ({persons, filterValue}) => {
     
     <h2>Numbers</h2>
       <div>
-        {persons.filter(item => item.name.toLowerCase().includes(filterValue.toLowerCase())).map((item, index) => {
+        {persons?.filter(item => item.name.toLowerCase().includes(filterValue.toLowerCase())).map((item, index) => {
           return <p key={item.name} style={{margin: 0}}>{item.name} {item.number}</p>;
         })}
       </div>
