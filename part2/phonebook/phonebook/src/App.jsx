@@ -29,7 +29,24 @@ const App = () => {
         return item.name === newName;
       })
     ) {
-      alert(`${newName} is already added to phonebook`);
+      // user exists, ask for confirmation if they want to replace it, otherwise do nothing
+      if (
+        confirm(
+          `${newName} is already added to phonebook, replace the old number with a new one?`
+        )
+      ) {
+        const oldUsername = persons.find((item) => {
+          return item.name === newName;
+        });
+
+        personService
+          .update(oldUsername.id, newObject)
+          .then((updatedPerson) =>
+            setPersons(
+              persons.map((p) => (p.id !== oldUsername.id ? p : updatedPerson))
+            )
+          );
+      }
     } else {
       personService
         .create(newObject)
