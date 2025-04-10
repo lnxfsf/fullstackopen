@@ -42,7 +42,7 @@ app.get("/api/persons", (req, res) => {
 });
 
 app.get("/api/persons/:id", (req, res) => {
-  const id = req.params.id;
+  const id = Number(req.params.id);
   const contact = phonebook.find((contact) => contact.id === id);
 
   if (contact) {
@@ -53,7 +53,7 @@ app.get("/api/persons/:id", (req, res) => {
 });
 
 app.delete("/api/persons/:id", (req, res) => {
-  const id = req.params.id;
+  const id = Number(req.params.id);
 
   const deletingContact = phonebook.find((contact) => contact.id === id);
 
@@ -63,6 +63,24 @@ app.delete("/api/persons/:id", (req, res) => {
   } else {
     res.status(404).send("Not found");
   }
+});
+
+app.post("/api/persons", (req, res) => {
+  const { name, number } = req.body;
+
+  if (!name || !number) {
+    return res.status(400).json({ error: "Name or number missing" });
+  }
+
+  const contact = {
+    id: Math.floor(Math.random() * 1000000),
+    name,
+    number,
+  };
+
+  phonebook.push(contact);
+
+  return res.status(200).end();
 });
 
 app.listen(PORT, () => {
