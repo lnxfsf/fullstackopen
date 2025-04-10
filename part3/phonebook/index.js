@@ -68,8 +68,15 @@ app.delete("/api/persons/:id", (req, res) => {
 app.post("/api/persons", (req, res) => {
   const { name, number } = req.body;
 
-  if (!name || !number) {
-    return res.status(400).json({ error: "Name or number missing" });
+  const existingContact = phonebook.find((contact) => contact.name === name);
+  if (existingContact) {
+    return res.status(400).json({ error: "Name must be unique" });
+  } else if (!name && !number) {
+    return res.status(400).json({ error: "Name and number missing" });
+  } else if (!name) {
+    return res.status(400).json({ error: "Name missing" });
+  } else if (!number) {
+    return res.status(400).json({ error: "Number missing" });
   }
 
   const contact = {
