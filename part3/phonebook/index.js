@@ -26,6 +26,16 @@ let phonebook = [
     }
 ]
 
+app.get('/info', (req, res) => {
+
+    const date = new Date();
+
+
+    res.send(`<p>Phonebook has info for ${phonebook.length} people</p><p>${new Date()}</p>`)
+  })
+
+  
+
 app.get('/api/persons', (req,res) => {
     res.json(phonebook)
 })
