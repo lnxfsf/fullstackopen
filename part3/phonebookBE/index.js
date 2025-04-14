@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
@@ -86,7 +88,10 @@ app.delete("/api/persons/:id", (req, res) => {
 app.post("/api/persons", (req, res) => {
   const { name, number } = req.body;
 
-  const existingContact = phonebook.find((contact) => contact.name === name);
+  // TODO posle, ces uraditi proveru
+  //const existingContact = phonebook.find((contact) => contact.name === name);
+
+
   if (existingContact) {
     return res.status(400).json({ error: "Name must be unique" });
   } else if (!name && !number) {
