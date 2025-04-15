@@ -1,4 +1,4 @@
-require('dotenv').config()
+require("dotenv").config();
 
 const express = require("express");
 const morgan = require("morgan");
@@ -7,7 +7,7 @@ const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 3002;
 
-
+const Person = require("./models/person");
 
 app.use(cors());
 
@@ -58,33 +58,75 @@ app.get("/info", (req, res) => {
 });
 
 app.get("/api/persons", (req, res) => {
-  res.json(phonebook);
+  Person.find({})
+    .then((result) => {
+      console.log("phonebook:", result);
+      res.status(200).json(result);
+    })
+    .catch((error) => {
+      console.log("error finding all numbers:", error.message);
+      res.status(404).send("Not found");
+    });
+
+  /*  res.json(phonebook); */
 });
 
 app.get("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const contact = phonebook.find((contact) => contact.id === id);
+  const id = req.params.id;
 
+  Person.findById(id)
+    .then((result) => {
+      if (result) {
+        console.log("phonebook by Id:", result);
+        res.status(200).json(result);
+      } else {
+        res.status(404).send("Person not found");
+      }
+    })
+    .catch((error) => {
+      console.log("error finding specific number by id:", error.message);
+      res.status(404).send("Not found");
+    });
+
+  /* 
+  const contact = phonebook.find((contact) => contact.id === id); */
+
+  /* 
   if (contact) {
     res.json(contact);
   } else {
     res.status(404).send("Not found");
-  }
+  } */
 });
 
 app.delete("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
+  const id = req.params.id;
+  /* 
+  const deletingContact = phonebook.find((contact) => contact.id === id); */
 
-  const deletingContact = phonebook.find((contact) => contact.id === id);
-
-  if (deletingContact) {
+  /*  if (deletingContact) {
     phonebook = phonebook.filter((contact) => contact.id !== id);
     return res.status(204).end();
   } else {
     res.status(404).send("Not found");
-  }
+  } */
+
+  Person.findByIdAndDelete(id)
+    .then((result) => {
+      if (result) {
+        console.log("phonebook by Id:", result);
+        res.status(204).end();
+      } else {
+        res.status(404).send("Person not found");
+      }
+    })
+    .catch((error) => {
+      console.log("error deleting by id:", error.message);
+      res.status(404).send("Not found");
+    });
 });
 
+/* 
 app.post("/api/persons", (req, res) => {
   const { name, number } = req.body;
 
@@ -111,6 +153,51 @@ app.post("/api/persons", (req, res) => {
   phonebook.push(contact);
 
   return res.status(200).json(contact);
+}); */
+
+app.post("/api/persons", (req, res) => {
+  const { name, number } = req.body;
+
+  // TODO posle, ces uraditi proveru
+  //const existingContact = phonebook.find((contact) => contact.name === name);
+
+  /*  if (existingContact) {
+    return res.status(400).json({ error: "Name must be unique" });
+  } else  */ if (!name && !number) {
+    return res.status(400).json({ error: "Name and number missing" });
+  } else if (!name) {
+    return res.status(400).json({ error: "Name missing" });
+  } else if (!number) {
+    return res.status(400).json({ error: "Number missing" });
+  }
+
+  /* const contact = {
+    id: Math.floor(Math.random() * 1000000),
+    name,
+    number,
+  };
+ */
+
+  const person = new Person({
+    name: name,
+    number: number,
+  });
+
+  console.log("treba da doda");
+  person
+    .save()
+    .then((savedContact) => {
+      console.log(`added number to phonebook`, savedContact);
+      res.status(200).json(savedContact);
+    })
+    .catch((error) => {
+      console.log("error adding number:", error.message);
+      res.status(404).send("Not found");
+    });
+
+  /* phonebook.push(contact); */
+
+  /* return res.status(200).json({name: name, number: number}); */
 });
 
 app.listen(PORT, () => {
