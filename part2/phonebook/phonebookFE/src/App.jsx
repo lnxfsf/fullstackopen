@@ -61,9 +61,19 @@ const App = () => {
           .catch((error) => {
             console.log(error);
 
+
+
+            if(error.status === 404){
             setMessage(
               `Information of ${oldUsername.name} has already been removed from server `
             );
+          } else {
+            setMessage(error.response.data.error);
+          }
+
+            
+
+
             setMessageColor("red");
             setPersons(persons.filter((n) => n.id !== oldUsername.id));
 

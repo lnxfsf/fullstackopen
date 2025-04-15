@@ -215,7 +215,8 @@ app.put("/api/persons/:id", (req, res, next) => {
 
   const { name, number } = req.body;
 
-  Person.findById(id)
+ 
+   Person.findById(id)
     .then((contact) => {
       if (!contact) {
         return res.status(404).end();
@@ -228,7 +229,7 @@ app.put("/api/persons/:id", (req, res, next) => {
         res.json(updatedContact);
       });
     })
-    .catch((error) => next(error));
+    .catch((error) => next(error)); 
 });
 
 app.use(errorHandler);
