@@ -18,6 +18,17 @@ morgan.token("post-data", (req) => {
   return req.method === "POST" ? JSON.stringify(req.body) : "";
 });
 
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+
+  next(error)
+}
+
+
 app.use(
   morgan(
     ":method :url :status :res[content-length] - :response-time ms :post-data"
@@ -50,11 +61,23 @@ let phonebook = [
 app.get("/info", (req, res) => {
   const date = new Date();
 
-  res.send(
-    `<p>Phonebook has info for ${
-      phonebook.length
-    } people</p><p>${new Date()}</p>`
-  );
+  Person.find({})
+  .then((phonebook) => {
+    res.send(
+      `<p>Phonebook has info for ${
+        phonebook.length
+      } people</p><p>${new Date()}</p>`
+    );
+
+   
+  })
+  .catch((error) => {
+    console.log(error);
+    res.status(500).end();
+  });
+
+
+ 
 });
 
 app.get("/api/persons", (req, res) => {
@@ -64,14 +87,14 @@ app.get("/api/persons", (req, res) => {
       res.status(200).json(result);
     })
     .catch((error) => {
-      console.log("error finding all numbers:", error.message);
-      res.status(404).send("Not found");
+      console.log(error);
+      res.status(500).end();
     });
 
   /*  res.json(phonebook); */
 });
 
-app.get("/api/persons/:id", (req, res) => {
+app.get("/api/persons/:id", (req, res, next) => {
   const id = req.params.id;
 
   Person.findById(id)
@@ -83,10 +106,7 @@ app.get("/api/persons/:id", (req, res) => {
         res.status(404).send("Person not found");
       }
     })
-    .catch((error) => {
-      console.log("error finding specific number by id:", error.message);
-      res.status(404).send("Not found");
-    });
+    .catch((error) => next(error));
 
   /* 
   const contact = phonebook.find((contact) => contact.id === id); */
@@ -99,7 +119,7 @@ app.get("/api/persons/:id", (req, res) => {
   } */
 });
 
-app.delete("/api/persons/:id", (req, res) => {
+app.delete("/api/persons/:id", (req, res, next) => {
   const id = req.params.id;
   /* 
   const deletingContact = phonebook.find((contact) => contact.id === id); */
@@ -120,10 +140,7 @@ app.delete("/api/persons/:id", (req, res) => {
         res.status(404).send("Person not found");
       }
     })
-    .catch((error) => {
-      console.log("error deleting by id:", error.message);
-      res.status(404).send("Not found");
-    });
+    .catch((error) => next(error));
 });
 
 /* 
@@ -191,8 +208,8 @@ app.post("/api/persons", (req, res) => {
       res.status(200).json(savedContact);
     })
     .catch((error) => {
-      console.log("error adding number:", error.message);
-      res.status(404).send("Not found");
+      console.log(error);
+      res.status(500).end();
     });
 
   /* phonebook.push(contact); */
@@ -200,6 +217,11 @@ app.post("/api/persons", (req, res) => {
   /* return res.status(200).json({name: name, number: number}); */
 });
 
+app.use(errorHandler)
+
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+
