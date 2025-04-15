@@ -19,15 +19,14 @@ morgan.token("post-data", (req) => {
 });
 
 const errorHandler = (error, request, response, next) => {
-  console.error(error.message)
+  console.error(error.message);
 
-  if (error.name === 'CastError') {
-    return response.status(400).send({ error: 'malformatted id' })
-  } 
+  if (error.name === "CastError") {
+    return response.status(400).send({ error: "malformatted id" });
+  }
 
-  next(error)
-}
-
+  next(error);
+};
 
 app.use(
   morgan(
@@ -62,22 +61,17 @@ app.get("/info", (req, res) => {
   const date = new Date();
 
   Person.find({})
-  .then((phonebook) => {
-    res.send(
-      `<p>Phonebook has info for ${
-        phonebook.length
-      } people</p><p>${new Date()}</p>`
-    );
-
-   
-  })
-  .catch((error) => {
-    console.log(error);
-    res.status(500).end();
-  });
-
-
- 
+    .then((phonebook) => {
+      res.send(
+        `<p>Phonebook has info for ${
+          phonebook.length
+        } people</p><p>${new Date()}</p>`
+      );
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(500).end();
+    });
 });
 
 app.get("/api/persons", (req, res) => {
@@ -217,11 +211,29 @@ app.post("/api/persons", (req, res) => {
   /* return res.status(200).json({name: name, number: number}); */
 });
 
-app.use(errorHandler)
+app.put("/api/persons/:id", (req, res, next) => {
+  const id = req.params.id;
 
+  const { name, number } = req.body;
+
+  Person.findById(id)
+    .then((contact) => {
+      if (!contact) {
+        return res.status(404).end();
+      }
+
+      contact.name = name;
+      contact.number = number;
+
+      return contact.save().then((updatedContact) => {
+        res.json(updatedContact);
+      });
+    })
+    .catch((error) => next(error));
+});
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-
