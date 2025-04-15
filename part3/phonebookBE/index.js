@@ -23,6 +23,8 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id" });
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
 
   next(error);
@@ -166,7 +168,7 @@ app.post("/api/persons", (req, res) => {
   return res.status(200).json(contact);
 }); */
 
-app.post("/api/persons", (req, res) => {
+app.post("/api/persons", (req, res, next) => {
   const { name, number } = req.body;
 
   // TODO posle, ces uraditi proveru
@@ -194,17 +196,14 @@ app.post("/api/persons", (req, res) => {
     number: number,
   });
 
-  console.log("treba da doda");
+ 
   person
     .save()
     .then((savedContact) => {
       console.log(`added number to phonebook`, savedContact);
       res.status(200).json(savedContact);
     })
-    .catch((error) => {
-      console.log(error);
-      res.status(500).end();
-    });
+    .catch(error => next(error))
 
   /* phonebook.push(contact); */
 

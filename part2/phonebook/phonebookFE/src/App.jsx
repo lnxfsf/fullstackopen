@@ -86,6 +86,15 @@ const App = () => {
         })
         .catch((error) => {
           console.log(error);
+          console.log(error.response.data.error);
+
+          setMessage(error.response.data.error);
+          setMessageColor("red");
+
+          setTimeout(() => {
+            setMessage(null);
+            setMessageColor("green");
+          }, 5000);
         });
     }
   };
