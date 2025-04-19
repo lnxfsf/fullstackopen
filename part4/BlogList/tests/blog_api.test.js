@@ -107,9 +107,7 @@ test("creates new post", async () => {
 
 });
 
-after(() => console.log('finished running tests'));
-/* 
 after(async () => {
   await mongoose.connection.close();
 });
- */
+ 
