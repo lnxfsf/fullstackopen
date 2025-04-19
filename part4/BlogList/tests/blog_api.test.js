@@ -1,7 +1,7 @@
 const { test, after, beforeEach, describe } = require("node:test");
 const mongoose = require("mongoose");
 const supertest = require("supertest");
-const app = require("../index");
+const app = require("../app");
 const assert = require("node:assert");
 
 const Blog = require("../models/Blog");
@@ -72,7 +72,6 @@ describe("when there are initially some blogs saved", () => {
   });
 });
 
-
 test("unique identifier property of blog posts is named id", async () => {
   const response = await api.get("/api/blogs");
   const blog = response.body[0];
@@ -91,9 +90,7 @@ test("creates new post", async () => {
 
   const response = await api.get("/api/blogs");
 
-  assert.strictEqual(
-    postResponse.status,
-    201);
+  assert.strictEqual(postResponse.status, 201);
 
   assert.strictEqual(response.body.length, initialBlogs.length + 1);
 
@@ -103,11 +100,13 @@ test("creates new post", async () => {
   assert.strictEqual(newBlog.author, "igor");
   assert.strictEqual(newBlog.url, "https://obale.com");
   assert.strictEqual(newBlog.likes, 34);
-
-
 });
 
 after(async () => {
-  await mongoose.connection.close();
+  try {
+    await mongoose.connection.close();
+    console.log("Database connection closed successfully");
+  } catch (error) {
+    console.error("Error closing database connection:", error);
+  }
 });
- 
