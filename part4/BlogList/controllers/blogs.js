@@ -1,15 +1,11 @@
-const router = require('express').Router()
-const Blog = require("../models/Blog")
-
-
+const router = require("express").Router();
+const Blog = require("../models/Blog");
 
 router.get("/", (request, response) => {
   Blog.find({}).then((blogs) => {
     response.json(blogs);
   });
 });
-
-
 
 router.post("/", (request, response) => {
   const blog = new Blog(request.body);
@@ -19,5 +15,18 @@ router.post("/", (request, response) => {
   });
 });
 
+router.delete("/:id", async (request, response) => {
+  try {
+    const { id } = request.params;
 
-module.exports = router
+    await Blog.findByIdAndDelete(id);
+    response.status(204).end();
+  } catch (error) {
+    console.error("Error deleting blog:", error);
+    response
+      .status(500)
+      .json({ error: "something went wrong deleting the blog" });
+  }
+});
+
+module.exports = router;
