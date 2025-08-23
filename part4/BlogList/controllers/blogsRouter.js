@@ -1,15 +1,33 @@
 const router = require("express").Router();
 const Blog = require("../models/Blog");
 const User = require("../models/User");
+const jwt = require('jsonwebtoken')
 
+const getTokenFrom = request => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.startsWith('Bearer ')) {
+    return authorization.replace('Bearer ', '')
+  }
+  return null
+}
+
+// get all blogs
 router.get("/", (request, response) => {
   Blog.find({}).populate('user', {username: 1, name: 1}).then((blogs) => {
     response.json(blogs);
   });
 });
 
+
+// create new blog
 router.post("/", async (request, response) => {
-  const { title, author, url, likes, user } = request.body;
+  const { title, author, url, likes } = request.body;
+
+  const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: 'token invalid' })  
+  }
+  const user = await User.findById(decodedToken.id)
 
   const blog = new Blog({
     title,
@@ -33,6 +51,7 @@ router.post("/", async (request, response) => {
   response.status(201).json(savedBlog);
 });
 
+// delete blog by id
 router.delete("/:id", async (request, response) => {
   try {
     const { id } = request.params;
@@ -48,7 +67,7 @@ router.delete("/:id", async (request, response) => {
 });
 
 
-// routes/blogs.js or wherever your blogsRouter is
+// update blog by id
 router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
