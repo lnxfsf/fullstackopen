@@ -21,7 +21,6 @@ router.post("/", async (request, response) => {
 
   const savedBlog = await blog.save();
 
-  console.log("saved blog sacuvao je: ", savedBlog._id)
   // Add blog in user's , blog list of id
   const userObj = await User.findById(user);
   if (!userObj) {

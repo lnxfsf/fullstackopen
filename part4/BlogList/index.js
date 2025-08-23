@@ -3,8 +3,10 @@ const config = require("./utils/config");
 const logger = require("./utils/logger");
 const mongoose = require("mongoose");
 
-const blogsRouter = require("./controllers/blogs");
+const blogsRouter = require("./controllers/blogsRouter");
 const usersRouter = require("./controllers/usersRouter")
+const loginRouter = require('./controllers/login')
+
 
 const app = express();
 app.use(express.json());
@@ -21,8 +23,8 @@ mongoose.connect(mongoUrl).then(()=> {
 });
 
 app.use("/api/blogs", blogsRouter);
-
 app.use("/api/users", usersRouter)
+app.use('/api/login', loginRouter)
 
 app.listen(config.PORT, () => {
   logger.info(`Server running on port ${config.PORT}`);
