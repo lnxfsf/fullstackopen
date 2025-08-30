@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt')
 
 
 router.get("/", (request, response) => {
-    User.find({}).then((user) => {
+    User.find({}).populate("blogs", {title: 1, author: 1, url: 1}).then((user) => {
         response.json(user);
     });
 });
