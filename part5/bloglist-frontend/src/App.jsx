@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
@@ -15,6 +15,7 @@ const App = () => {
 
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
+  const noteFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -58,6 +59,7 @@ const App = () => {
   };
 
   const createNote = (blogObject) => {
+    
     blogService
       .create(blogObject)
       .then((returnedBlog) => {
@@ -69,6 +71,7 @@ const App = () => {
         setTimeout(() => {
           setMessage(null);
         }, 5000);
+        noteFormRef.current.toggleVisibility()
       })
       .catch((e) => {
         setMessage("Error creating blog");
@@ -103,6 +106,8 @@ const App = () => {
     );
   };
 
+
+
   return (
     <div>
       {message && (
@@ -121,7 +126,7 @@ const App = () => {
           </div>
 
           <div>
-            <Togglable buttonLabel="Create new blog">
+            <Togglable buttonLabel="Create new blog" ref={noteFormRef}>
               <NoteForm createNote={createNote} />
             </Togglable>
           </div>
