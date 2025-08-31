@@ -3,6 +3,8 @@ import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import "./main.css";
+import LoginForm from "./components/LoginForm";
+import Togglable from "./components/Togglable";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -12,8 +14,6 @@ const App = () => {
 
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
-  
-
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -76,12 +76,13 @@ const App = () => {
       event.target.author.value = "";
       event.target.url.value = "";
 
-      setMessage(`A new blog ${returnedBlog.title} by ${returnedBlog.author} added`);
+      setMessage(
+        `A new blog ${returnedBlog.title} by ${returnedBlog.author} added`
+      );
       setIsError(false);
       setTimeout(() => {
         setMessage(null);
       }, 5000);
-
     } catch (e) {
       console.log(e);
       setMessage("Error creating blog");
@@ -102,42 +103,29 @@ const App = () => {
     }, 5000);
   };
 
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <h2>Login</h2>
-      <div>
-        <label>
-          username
-          <input
-            type="text"
-            value={username}
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          password
-          <input
-            type="password"
-            value={password}
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </label>
-      </div>
-      <button type="submit">login</button>
-      
-    </form>
-  );
+  const loginForm = () => {
+    return (
+      <Togglable buttonLabel="login">
+        <LoginForm
+          username={username}
+          password={password}
+          handleUsernameChange={({ target }) => setUsername(target.value)}
+          handlePasswordChange={({ target }) => setPassword(target.value)}
+          handleSubmit={handleLogin}
+        />
+      </Togglable>
+    );
+  };
 
   return (
     <div>
-
-      {message && <div className={`message ${isError ? 'error' : 'success'}`}>{message}</div>}
+      {message && (
+        <div className={`message ${isError ? "error" : "success"}`}>
+          {message}
+        </div>
+      )}
 
       {!user && loginForm()}
-
-      
 
       {user && (
         <div>
@@ -147,7 +135,7 @@ const App = () => {
           </div>
 
           <div>
-            <h2>Create new</h2>
+           <Togglable buttonLabel="Create new blog">
             <form onSubmit={createNote}>
               <div>
                 title:
@@ -165,6 +153,7 @@ const App = () => {
                 <button type="submit">create</button>
               </div>
             </form>
+</Togglable>
           </div>
 
           <h2>blogs</h2>
