@@ -15,7 +15,7 @@ const App = () => {
 
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
-  const noteFormRef = useRef()
+  const noteFormRef = useRef();
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -59,7 +59,6 @@ const App = () => {
   };
 
   const createNote = (blogObject) => {
-    
     blogService
       .create(blogObject)
       .then((returnedBlog) => {
@@ -71,7 +70,7 @@ const App = () => {
         setTimeout(() => {
           setMessage(null);
         }, 5000);
-        noteFormRef.current.toggleVisibility()
+        noteFormRef.current.toggleVisibility();
       })
       .catch((e) => {
         setMessage("Error creating blog");
@@ -85,9 +84,38 @@ const App = () => {
   const updateBlog = async (id, updatedBlog) => {
     try {
       const response = await blogService.update(id, updatedBlog);
-      setBlogs(blogs.map(blog => blog.id === id ? response : blog));
+      setBlogs(blogs.map((blog) => (blog.id === id ? response : blog)));
+
+      setMessage("Success updating blog");
+      setIsError(false);
+      setTimeout(() => {
+        setMessage(null);
+      }, 5000);
     } catch (error) {
-      console.error('Error updating blog:', error);
+      console.error("Error updating blog:", error);
+      setMessage("Error updating blog");
+      setIsError(true);
+      setTimeout(() => {
+        setMessage(null);
+      }, 5000);
+    }
+  };
+
+  const deleteBlog = async (id) => {
+    try {
+      await blogService.deleteBlog(id);
+      setBlogs(blogs.filter((blog) => blog.id !== id));
+      setMessage("Success deleted blog");
+      setIsError(false);
+      setTimeout(() => {
+        setMessage(null);
+      }, 5000);
+    } catch (error) {
+      setMessage("Error deleting blog");
+      setIsError(true);
+      setTimeout(() => {
+        setMessage(null);
+      }, 5000);
     }
   };
 
@@ -100,7 +128,7 @@ const App = () => {
       setMessage(null);
     }, 5000);
   };
- 
+
   const loginForm = () => {
     return (
       <Togglable buttonLabel="login">
@@ -114,8 +142,6 @@ const App = () => {
       </Togglable>
     );
   };
-
-
 
   return (
     <div>
@@ -141,13 +167,17 @@ const App = () => {
           </div>
 
           <h2>blogs</h2>
-          {blogs.sort((a, b) => b.likes - a.likes).map((blog) => (
-            <Blog 
-              key={blog.id}
-              blog={blog}
-              updateBlog={updateBlog}
-            />
-          ))}
+          {blogs
+            .sort((a, b) => b.likes - a.likes)
+            .map((blog) => (
+              <Blog
+                key={blog.id}
+                blog={blog}
+                updateBlog={updateBlog}
+                currentUser={user}
+                deleteBlog={deleteBlog}
+              />
+            ))}
         </div>
       )}
     </div>

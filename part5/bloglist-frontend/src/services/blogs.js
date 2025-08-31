@@ -26,7 +26,7 @@ const update = (id, newObject) => {
     headers: { Authorization: token },
   };
 
-  const request = axios.put(`${baseUrl}/${id}`, newObject, , config);
+  const request = axios.put(`${baseUrl}/${id}`, newObject , config);
   return request.then((response) => response.data);
 };
 
