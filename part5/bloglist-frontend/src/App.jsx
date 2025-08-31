@@ -5,6 +5,7 @@ import loginService from "./services/login";
 import "./main.css";
 import LoginForm from "./components/LoginForm";
 import Togglable from "./components/Togglable";
+import NoteForm from "./components/NoteForm";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -135,25 +136,9 @@ const App = () => {
           </div>
 
           <div>
-           <Togglable buttonLabel="Create new blog">
-            <form onSubmit={createNote}>
-              <div>
-                title:
-                <input type="text" name="title" />
-              </div>
-              <div>
-                <div>
-                  author:
-                  <input type="text" name="author" />
-                </div>
-                <div>
-                  url:
-                  <input type="text" name="url" />
-                </div>
-                <button type="submit">create</button>
-              </div>
-            </form>
-</Togglable>
+            <Togglable buttonLabel="Create new blog">
+              <NoteForm createNote={createNote} />
+            </Togglable>
           </div>
 
           <h2>blogs</h2>
