@@ -54,7 +54,21 @@ router.post("/", async (request, response) => {
 // delete blog by id
 router.delete("/:id", async (request, response) => {
   try {
+    const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: 'token invalid' })  
+    }
+
     const { id } = request.params;
+    const blog = await Blog.findById(id);
+
+    if (!blog) {
+      return response.status(404).json({ error: 'blog not found' });
+    }
+
+    if (blog.user.toString() !== decodedToken.id.toString()) {
+      return response.status(403).json({ error: 'only the creator can delete this blog' });
+    }
 
     await Blog.findByIdAndDelete(id);
     response.status(204).end();
@@ -66,12 +80,25 @@ router.delete("/:id", async (request, response) => {
   }
 });
 
-
 // update blog by id
 router.put("/:id", async (req, res) => {
   try {
+    const decodedToken = jwt.verify(getTokenFrom(req), process.env.SECRET)
+    if (!decodedToken.id) {
+      return res.status(401).json({ error: 'token invalid' })  
+    }
+
     const { id } = req.params;
     const { title, author, url, likes, user } = req.body;
+
+    const blog = await Blog.findById(id);
+    if (!blog) {
+      return res.status(404).json({ error: 'blog not found' });
+    }
+
+    if (blog.user.toString() !== decodedToken.id.toString()) {
+      return res.status(403).json({ error: 'only the creator can update this blog' });
+    }
 
     const updatedBlog = await Blog.findByIdAndUpdate(
       id,
@@ -79,11 +106,7 @@ router.put("/:id", async (req, res) => {
       { new: true, runValidators: true, context: "query" }
     ).populate('user', { username: 1, name: 1 });
 
-    if (updatedBlog) {
-      res.status(200).json(updatedBlog);
-    } else {
-      res.status(404).json({ error: "blog not found" });
-    }
+    res.status(200).json(updatedBlog);
   } catch (error) {
     console.error("Error updating blog:", error.message);
     res.status(500).json({ error: "internal server error" });
