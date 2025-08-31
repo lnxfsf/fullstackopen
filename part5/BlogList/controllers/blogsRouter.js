@@ -71,13 +71,13 @@ router.delete("/:id", async (request, response) => {
 router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { likes } = req.body;
+    const { title, author, url, likes, user } = req.body;
 
     const updatedBlog = await Blog.findByIdAndUpdate(
       id,
-      { likes },
+      { title, author, url, likes, user },
       { new: true, runValidators: true, context: "query" }
-    );
+    ).populate('user', { username: 1, name: 1 });
 
     if (updatedBlog) {
       res.status(200).json(updatedBlog);

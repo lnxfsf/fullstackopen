@@ -82,6 +82,15 @@ const App = () => {
       });
   };
 
+  const updateBlog = async (id, updatedBlog) => {
+    try {
+      const response = await blogService.update(id, updatedBlog);
+      setBlogs(blogs.map(blog => blog.id === id ? response : blog));
+    } catch (error) {
+      console.error('Error updating blog:', error);
+    }
+  };
+
   const logOut = async () => {
     window.localStorage.removeItem("user");
     setUser(null);
@@ -133,7 +142,11 @@ const App = () => {
 
           <h2>blogs</h2>
           {blogs.map((blog) => (
-            <Blog key={blog.id} blog={blog} />
+            <Blog 
+              key={blog.id}
+              blog={blog}
+              updateBlog={updateBlog}
+            />
           ))}
         </div>
       )}
