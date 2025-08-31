@@ -15,16 +15,14 @@ const App = () => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
   }, []);
 
-
-   useEffect(() => {
-    const UserJSON = window.localStorage.getItem('user')
+  useEffect(() => {
+    const UserJSON = window.localStorage.getItem("user");
     if (UserJSON) {
-      const user = JSON.parse(UserJSON)
-      setUser(user)
-      
+      const user = JSON.parse(UserJSON);
+      setUser(user);
+      blogService.setToken(user.token);
     }
-  }, [])
-
+  }, []);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -38,6 +36,7 @@ const App = () => {
 
       console.log("credentials", user);
       window.localStorage.setItem("user", JSON.stringify(user));
+      blogService.setToken(user.token);
     } catch {
       setErrorMessage("wrong credentials");
       setTimeout(() => {
@@ -46,12 +45,38 @@ const App = () => {
     }
   };
 
+  const createNote = async (event) => {
+    event.preventDefault();
+    const title = event.target.title.value;
+    const author = event.target.author.value;
+    const url = event.target.url.value;
+
+    const newBlog = {
+      title,
+      author,
+      url,
+    };
+
+    try {
+      const returnedBlog = await blogService.create(newBlog);
+      setBlogs(blogs.concat(returnedBlog));
+
+      event.target.Title.value = "";
+      event.target.Author.value = "";
+      event.target.Url.value = "";
+    } catch (e) {
+
+      setErrorMessage("Error creating blog");
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    }
+  };
+
   const logOut = async () => {
-    window.localStorage.removeItem('user')
+    window.localStorage.removeItem("user");
     setUser(null);
-
-
-  }
+  };
 
   const loginForm = () => (
     <form onSubmit={handleLogin}>
@@ -80,7 +105,6 @@ const App = () => {
       <p>{errorMessage}</p>
     </form>
   );
-  
 
   return (
     <div>
@@ -91,7 +115,29 @@ const App = () => {
           <div>
             <p>{user.name} logged in</p>
             <button onClick={logOut}>LogOut</button>
-            </div>
+          </div>
+
+          <div>
+            <h2>Create new</h2>
+            <form onSubmit={createNote}>
+              <div>
+                title:
+                <input type="text" name="title" />
+              </div>
+              <div>
+                <div>
+                  author:
+                  <input type="text" name="author" />
+                </div>
+                <div>
+                  url:
+                  <input type="text" name="url" />
+                </div>
+                <button type="submit">create</button>
+              </div>
+            </form>
+          </div>
+
           <h2>blogs</h2>
           {blogs.map((blog) => (
             <Blog key={blog.id} blog={blog} />
