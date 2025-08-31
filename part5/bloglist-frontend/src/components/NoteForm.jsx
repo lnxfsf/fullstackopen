@@ -1,6 +1,22 @@
 const NoteForm = ({ createNote }) => {
+  const newNote = (event) => {
+    event.preventDefault();
+
+    const title = event.target.title.value;
+    const author = event.target.author.value;
+    const url = event.target.url.value;
+
+    const newBlog = {
+      title,
+      author,
+      url,
+    };
+
+    createNote(newBlog);
+  };
+
   return (
-    <form onSubmit={createNote}>
+    <form onSubmit={newNote}>
       <div>
         title:
         <input type="text" name="title" />

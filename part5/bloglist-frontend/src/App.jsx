@@ -57,41 +57,26 @@ const App = () => {
     }
   };
 
-  const createNote = async (event) => {
-    event.preventDefault();
-    const title = event.target.title.value;
-    const author = event.target.author.value;
-    const url = event.target.url.value;
-
-    const newBlog = {
-      title,
-      author,
-      url,
-    };
-
-    try {
-      const returnedBlog = await blogService.create(newBlog);
-      setBlogs(blogs.concat(returnedBlog));
-
-      event.target.title.value = "";
-      event.target.author.value = "";
-      event.target.url.value = "";
-
-      setMessage(
-        `A new blog ${returnedBlog.title} by ${returnedBlog.author} added`
-      );
-      setIsError(false);
-      setTimeout(() => {
-        setMessage(null);
-      }, 5000);
-    } catch (e) {
-      console.log(e);
-      setMessage("Error creating blog");
-      setIsError(true);
-      setTimeout(() => {
-        setMessage(null);
-      }, 5000);
-    }
+  const createNote = (blogObject) => {
+    blogService
+      .create(blogObject)
+      .then((returnedBlog) => {
+        setBlogs(blogs.concat(returnedBlog));
+        setMessage(
+          `A new blog ${returnedBlog.title} by ${returnedBlog.author} added`
+        );
+        setIsError(false);
+        setTimeout(() => {
+          setMessage(null);
+        }, 5000);
+      })
+      .catch((e) => {
+        setMessage("Error creating blog");
+        setIsError(true);
+        setTimeout(() => {
+          setMessage(null);
+        }, 5000);
+      });
   };
 
   const logOut = async () => {
