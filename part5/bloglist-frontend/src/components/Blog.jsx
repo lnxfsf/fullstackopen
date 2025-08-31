@@ -1,40 +1,40 @@
-import { useState } from "react";
+import { useState } from 'react'
 
 const Blog = ({ blog, updateBlog, deleteBlog, currentUser }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
-    border: "solid",
+    border: 'solid',
     borderWidth: 1,
     marginBottom: 5,
-  };
-  const [visible, setVisible] = useState(false);
+  }
+  const [visible, setVisible] = useState(false)
 
-  const showWhenVisible = { display: visible ? "" : "none" };
+  const showWhenVisible = { display: visible ? '' : 'none' }
 
   const toggleVisibility = () => {
-    setVisible(!visible);
-  };
+    setVisible(!visible)
+  }
 
   const handleLike = async () => {
     const updatedBlog = {
       ...blog,
       likes: blog.likes + 1,
       user: blog.user.id,
-    };
-    await updateBlog(blog.id, updatedBlog);
-  };
+    }
+    await updateBlog(blog.id, updatedBlog)
+  }
 
   const handleDelete = async () => {
     if (window.confirm(`Delete blog "${blog.title}" by ${blog.author}?`)) {
-      await deleteBlog(blog.id);
+      await deleteBlog(blog.id)
     }
   }
 
   return (
     <>
       <div style={blogStyle}>
-        {blog.title} | {blog.author}{" "}
+        {blog.title} | {blog.author}{' '}
         <button onClick={toggleVisibility}>view</button>
         <div style={showWhenVisible}>
           <div>{blog.url}</div>
@@ -43,10 +43,10 @@ const Blog = ({ blog, updateBlog, deleteBlog, currentUser }) => {
           </div>
           <div>{blog?.user?.name}</div>
         </div>
-         {(currentUser?.username == blog?.user?.username ) && (<button onClick={handleDelete}>delete</button>)}
+        {(currentUser?.username === blog?.user?.username ) && (<button onClick={handleDelete}>delete</button>)}
       </div>
     </>
-  );
-};
+  )
+}
 
-export default Blog;
+export default Blog

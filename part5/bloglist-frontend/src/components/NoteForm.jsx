@@ -1,19 +1,19 @@
 const NoteForm = ({ createNote }) => {
   const newNote = (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
-    const title = event.target.title.value;
-    const author = event.target.author.value;
-    const url = event.target.url.value;
+    const title = event.target.title.value
+    const author = event.target.author.value
+    const url = event.target.url.value
 
     const newBlog = {
       title,
       author,
       url,
-    };
+    }
 
-    createNote(newBlog);
-  };
+    createNote(newBlog)
+  }
 
   return (
     <form onSubmit={newNote}>
@@ -33,7 +33,7 @@ const NoteForm = ({ createNote }) => {
         <button type="submit">create</button>
       </div>
     </form>
-  );
-};
+  )
+}
 
-export default NoteForm;
+export default NoteForm
