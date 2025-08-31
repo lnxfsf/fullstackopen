@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
+import "./main.css";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -9,7 +10,10 @@ const App = () => {
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
 
-  const [errorMessage, setErrorMessage] = useState("");
+  const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
+  
+
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -37,10 +41,17 @@ const App = () => {
       console.log("credentials", user);
       window.localStorage.setItem("user", JSON.stringify(user));
       blogService.setToken(user.token);
-    } catch {
-      setErrorMessage("wrong credentials");
+
+      setMessage("Login successful");
+      setIsError(false);
       setTimeout(() => {
-        setErrorMessage(null);
+        setMessage(null);
+      }, 5000);
+    } catch {
+      setMessage("wrong credentials");
+      setIsError(true);
+      setTimeout(() => {
+        setMessage(null);
       }, 5000);
     }
   };
@@ -61,14 +72,22 @@ const App = () => {
       const returnedBlog = await blogService.create(newBlog);
       setBlogs(blogs.concat(returnedBlog));
 
-      event.target.Title.value = "";
-      event.target.Author.value = "";
-      event.target.Url.value = "";
-    } catch (e) {
+      event.target.title.value = "";
+      event.target.author.value = "";
+      event.target.url.value = "";
 
-      setErrorMessage("Error creating blog");
+      setMessage(`A new blog ${returnedBlog.title} by ${returnedBlog.author} added`);
+      setIsError(false);
       setTimeout(() => {
-        setErrorMessage(null);
+        setMessage(null);
+      }, 5000);
+
+    } catch (e) {
+      console.log(e);
+      setMessage("Error creating blog");
+      setIsError(true);
+      setTimeout(() => {
+        setMessage(null);
       }, 5000);
     }
   };
@@ -76,6 +95,11 @@ const App = () => {
   const logOut = async () => {
     window.localStorage.removeItem("user");
     setUser(null);
+    setMessage("Logged out successfully");
+    setIsError(false);
+    setTimeout(() => {
+      setMessage(null);
+    }, 5000);
   };
 
   const loginForm = () => (
@@ -102,13 +126,18 @@ const App = () => {
         </label>
       </div>
       <button type="submit">login</button>
-      <p>{errorMessage}</p>
+      
     </form>
   );
 
   return (
     <div>
+
+      {message && <div className={`message ${isError ? 'error' : 'success'}`}>{message}</div>}
+
       {!user && loginForm()}
+
+      
 
       {user && (
         <div>
