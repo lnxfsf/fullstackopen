@@ -154,6 +154,57 @@ describe('Blog app', () => {
       expect(deleteButtonsOther.length).toBe(0);
     });
 
+    test('blogs are arranged in order according to likes, most liked first', async ({ page, request }) => {
+      // Clean the database before the test
+      await request.post('http://localhost:5173/api/testing/reset');
+      await page.goto('http://localhost:5173');
+      await request.post('http://localhost:5173/api/users', {
+        data: {
+          name: 'Edita',
+          username: 'edita3323',
+          password: '12345678'
+        }
+      });
+      // Login
+      await page.getByRole('button', { name: /login/i }).click();
+      await page.getByLabel('username').fill('edita3323');
+      await page.getByLabel('password').fill('12345678');
+      await page.getByRole('button', { name: /login/i }).click();
+      // Create three blogs
+      const blogs = [
+        { title: 'Blog A', author: 'Author A', url: 'https://a.com' },
+        { title: 'Blog B', author: 'Author B', url: 'https://b.com' },
+        { title: 'Blog C', author: 'Author C', url: 'https://c.com' }
+      ];
+      for (const blog of blogs) {
+        await page.getByRole('button', { name: /new blog/i }).click();
+        await page.getByLabel('title').fill(blog.title);
+        await page.getByLabel('author').fill(blog.author);
+        await page.getByLabel('url').fill(blog.url);
+        await page.getByRole('button', { name: /create/i }).click();
+        await expect(page.locator('.blog-title', { hasText: blog.title })).toBeVisible();
+      }
+
+      const likeCounts = { 'Blog A': 1, 'Blog B': 2, 'Blog C': 3 };
+
+  for (const [title, count] of Object.entries(likeCounts)) {
+    const blog = page.locator('.blog').filter({ hasText: title });
+    await blog.getByRole('button', { name: /view/i }).click();
+    for (let i = 0; i < count; i++) {
+      await blog.getByRole('button', { name: /like/i }).click();
+      await expect(blog.getByText(`likes ${i + 1}`)).toBeVisible();
+    }
+  }
+     
+
+      // Get all blog titles in order
+      const blogTitles = await page.locator('.blog-title').allTextContents();
+      // Expect Blog C first, Blog B second, Blog A third
+      expect(blogTitles[0]).toContain('Blog C');
+      expect(blogTitles[1]).toContain('Blog B');
+      expect(blogTitles[2]).toContain('Blog A');
+    });
+
   });
 
 });
