@@ -3,8 +3,10 @@ const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../app");
 const assert = require("node:assert");
+const bcrypt = require("bcrypt");
 
 const Blog = require("../models/Blog");
+const User = require("../models/User");
 
 const api = supertest(app);
 
@@ -47,8 +49,32 @@ const initialBlogs = [
   },
 ];
 
+// Helper function to create a user and get auth token
+const createUserAndGetToken = async () => {
+  const passwordHash = await bcrypt.hash("sekret", 10);
+  const user = new User({
+    username: "testuser",
+    name: "Test User",
+    passwordHash,
+  });
+  await user.save();
+
+  const loginResponse = await api
+    .post("/api/login")
+    .send({
+      username: "testuser",
+      password: "sekret",
+    });
+
+  return {
+    token: loginResponse.body.token,
+    user: user,
+  };
+};
+
 beforeEach(async () => {
   await Blog.deleteMany({});
+  await User.deleteMany({});
   await Blog.insertMany(initialBlogs);
 });
 
@@ -80,13 +106,18 @@ test("unique identifier property of blog posts is named id", async () => {
   assert(!blog._id, "Blog should not have '_id' field");
 });
 
-test("creates new post", async () => {
-  const postResponse = await api.post("/api/blogs").send({
-    title: "Unit",
-    author: "igor",
-    url: "https://obale.com",
-    likes: 34,
-  });
+test("creates new post with valid token", async () => {
+  const { token } = await createUserAndGetToken();
+
+  const postResponse = await api
+    .post("/api/blogs")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      title: "Unit",
+      author: "igor",
+      url: "https://obale.com",
+      likes: 34,
+    });
 
   const response = await api.get("/api/blogs");
 
@@ -102,16 +133,32 @@ test("creates new post", async () => {
   assert.strictEqual(newBlog.likes, 34);
 });
 
-test("deletes a blog post successfully", async () => {
-  const blogsAtStart = await api.get("/api/blogs");
-  const blogToDelete = blogsAtStart.body[0];
+test("deletes a blog post successfully with valid token", async () => {
+  const { token } = await createUserAndGetToken();
 
-  await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+  // First create a blog
+  const postResponse = await api
+    .post("/api/blogs")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      title: "Blog to Delete",
+      author: "Test Author",
+      url: "https://example.com/delete",
+      likes: 5,
+    });
+
+  const blogToDelete = postResponse.body;
+
+  // Now delete the blog
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .set("Authorization", `Bearer ${token}`)
+    .expect(204);
 
   const blogsAtEnd = await api.get("/api/blogs");
   const titles = blogsAtEnd.body.map((b) => b.title);
 
-  assert.strictEqual(blogsAtEnd.body.length, initialBlogs.length - 1);
+  assert.strictEqual(blogsAtEnd.body.length, initialBlogs.length);
   assert(!titles.includes(blogToDelete.title));
 });
 

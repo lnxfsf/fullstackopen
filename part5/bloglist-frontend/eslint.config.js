@@ -30,7 +30,7 @@ export default [
 
       ],
       indent: ['error', 2],
-      'linebreak-style': ['error', 'unix'],
+      'linebreak-style': ['off'],
       quotes: ['error', 'single'],
       semi: ['error', 'never'],
       eqeqeq: 'error',
@@ -39,5 +39,14 @@ export default [
       'arrow-spacing': ['error', { before: true, after: true }],
       'no-console': 'off'
     }
+  },
+  {
+    files: ['**/*.test.{js,jsx}'],
+    languageOptions: {
+      globals: {
+        ...globals.vitest
+      }
+    }
   }
+
 ]

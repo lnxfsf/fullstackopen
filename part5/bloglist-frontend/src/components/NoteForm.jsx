@@ -1,10 +1,15 @@
+import { useState } from 'react'
+
+
 const NoteForm = ({ createNote }) => {
+
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
+
+
   const newNote = (event) => {
     event.preventDefault()
-
-    const title = event.target.title.value
-    const author = event.target.author.value
-    const url = event.target.url.value
 
     const newBlog = {
       title,
@@ -12,23 +17,27 @@ const NoteForm = ({ createNote }) => {
       url,
     }
 
+    setTitle('')
+    setAuthor('')
+    setUrl('')
+
     createNote(newBlog)
   }
 
   return (
     <form onSubmit={newNote}>
       <div>
-        title:
-        <input type="text" name="title" />
+        <label htmlFor="title">title:</label>
+        <input value={title} onChange={({ target }) => setTitle(target.value)} type="text" name="title" id="title" />
       </div>
       <div>
         <div>
-          author:
-          <input type="text" name="author" />
+          <label htmlFor="author">author:</label>
+          <input value={author} onChange={({ target }) => setAuthor(target.value)} type="text" name="author" id="author" />
         </div>
         <div>
-          url:
-          <input type="text" name="url" />
+          <label htmlFor="url">url:</label>
+          <input type="text" value={url} onChange={({ target }) => setUrl(target.value)} name="url" id="url" />
         </div>
         <button type="submit">create</button>
       </div>
