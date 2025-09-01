@@ -104,7 +104,8 @@ const App = () => {
       setTimeout(() => {
         setMessage(null)
       }, 5000)
-    } catch {
+    } catch (e) {
+      console.log(e)
       setMessage('Error deleting blog')
       setIsError(true)
       setTimeout(() => {
