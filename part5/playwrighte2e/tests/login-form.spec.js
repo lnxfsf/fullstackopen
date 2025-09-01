@@ -110,6 +110,50 @@ describe('Blog app', () => {
       await expect(page.locator('.blog-title', { hasText: 'Deletable Blog' })).not.toBeVisible();
     });
 
+    test('only the user who added the blog sees the delete button', async ({ page, request }) => {
+      // Create a blog as the first user
+      await page.getByRole('button', { name: /login/i }).click();
+      await page.getByLabel('username').fill('edita3323');
+      await page.getByLabel('password').fill('12345678');
+      await page.getByRole('button', { name: /login/i }).click();
+      
+      await page.getByRole('button', { name: /new blog/i }).click();
+      await page.getByLabel('title').fill('User Blog');
+      await page.getByLabel('author').fill('Edita');
+      await page.getByLabel('url').fill('https://userblog.com');
+      await page.getByRole('button', { name: /create/i }).click();
+      // Wait for the blog to appear before revealing details
+      await expect(page.locator('.blog-title', { hasText: 'User Blog' })).toBeVisible();
+      // Reveal the blog details
+      const viewButtonsEdita = await page.locator('button', { hasText: /view/i }).all();
+      await viewButtonsEdita[viewButtonsEdita.length - 1].click();
+      // Wait for the delete button to be visible for the creator
+      const deleteButtonsEdita = await page.locator('button', { hasText: /delete/i }).all();
+      await expect(deleteButtonsEdita[deleteButtonsEdita.length - 1]).toBeVisible();
+      await page.getByRole('button', { name: /logout/i }).click();
+
+      // Register and login as a different user
+      await request.post('http://localhost:5173/api/users', {
+        data: {
+          name: 'OtherUser',
+          username: 'otheruser',
+          password: 'password123'
+        }
+      });
+      await page.getByRole('button', { name: /login/i }).click();
+      await page.getByLabel('username').fill('otheruser');
+      await page.getByLabel('password').fill('password123');
+      await page.getByRole('button', { name: /login/i }).click();
+      // Wait for the blog to appear for the other user
+      await expect(page.locator('.blog-title', { hasText: 'User Blog' })).toBeVisible();
+      // Reveal the blog details
+      const viewButtonsOther = await page.locator('button', { hasText: /view/i }).all();
+      await viewButtonsOther[viewButtonsOther.length - 1].click();
+      // Assert that the delete button is not visible for the other user
+      const deleteButtonsOther = await page.locator('button', { hasText: /delete/i }).all();
+      expect(deleteButtonsOther.length).toBe(0);
+    });
+
   });
 
 });
