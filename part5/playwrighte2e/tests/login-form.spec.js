@@ -44,6 +44,27 @@ describe('Blog app', () => {
     });
   });
 
+  describe('When logged in', () => {
+    beforeEach(async ({ page }) => {
+      await page.getByRole('button', { name: /login/i }).click();
+      await page.getByLabel('username').fill('edita3323');
+      await page.getByLabel('password').fill('12345678');
+      await page.getByRole('button', { name: /login/i }).click();
+    });
+
+    test('a new blog can be created', async ({ page }) => {
+      // Expand the form to create a new blog
+      await page.getByRole('button', { name: /new blog/i }).click();
+      await page.getByLabel('title').fill('Playwright E2E Blog');
+      await page.getByLabel('author').fill('Test Author');
+      await page.getByLabel('url').fill('https://playwright.dev');
+      await page.getByRole('button', { name: /create/i }).click();
+      // Expect the new blog to appear in the list
+      await expect(page.locator('.blog-title', { hasText: 'Playwright E2E Blog' })).toBeVisible();
+      await expect(page.locator('.blog-author', { hasText: 'Test Author' })).toBeVisible();
+
+    });
+  });
 
 });
 
