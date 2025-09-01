@@ -64,6 +64,22 @@ describe('Blog app', () => {
       await expect(page.locator('.blog-author', { hasText: 'Test Author' })).toBeVisible();
 
     });
+
+    test('a blog can be liked', async ({ page }) => {
+      // Create a new blog first
+      await page.getByRole('button', { name: /new blog/i }).click();
+      await page.getByLabel('title').fill('Likeable Blog');
+      await page.getByLabel('author').fill('Like Author');
+      await page.getByLabel('url').fill('https://likeable.blog');
+      await page.getByRole('button', { name: /create/i }).click();
+      // Reveal blog details
+      await page.getByRole('button', { name: /view/i }).click();
+      // Like the blog
+      await page.getByRole('button', { name: /like/i }).click();
+      // Expect the like count to increase to 1
+      await expect(page.getByText('likes 1')).toBeVisible();
+    });
+
   });
 
 });
