@@ -32,6 +32,13 @@ const reducer = (state = initialState, action) => {
     );
   }
 
+  if (action.type === 'ADD_ANECDOTE') {
+    return [
+      ...state,
+      asObject(action.data.content)
+    ];
+  }
+
   return state
 }
 
