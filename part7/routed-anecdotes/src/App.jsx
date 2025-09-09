@@ -5,27 +5,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import CreateNew from "./components/CreateNew";
 import AnecdoteList from "./components/AnecdoteList";
 import AnecdoteDetails from "./components/AnecdoteDetails";
-
-const Menu = () => {
-  const padding = {
-    paddingRight: 5,
-  };
-  return (
-    <div>
-      <Link to="/" style={padding}>
-        anecdotes
-      </Link>
-      <Link to="/create" style={padding}>
-        create new
-      </Link>
-      <Link to="/about" href="#" style={padding}>
-        about
-      </Link>
-    </div>
-  );
-};
-
-
+import Menu from "./components/Menu";
 
 const App = () => {
   const [anecdotes, setAnecdotes] = useState([
@@ -70,12 +50,33 @@ const App = () => {
       <div>
         <h1>Software anecdotes</h1>
         <Menu />
+        
+        {notification && (
+        <div
+          style={{
+            border: "1px solid black",
+            padding: "8px",
+            margin: "10px 0",
+          }}
+        >
+        {notification}
+        </div>
+        )}
 
+        
         <Routes>
           <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
           <Route path="/about" element={<About />} />
-          <Route path="/create" element={<CreateNew addNew={addNew} />} />
-          <Route path="/anecdotes/:id" element={<AnecdoteDetails anecdotes={anecdotes} />} />
+          <Route
+            path="/create"
+            element={
+              <CreateNew addNew={addNew} setNotification={setNotification} />
+            }
+          />
+          <Route
+            path="/anecdotes/:id"
+            element={<AnecdoteDetails anecdotes={anecdotes} />}
+          />
         </Routes>
 
         <Footer />
