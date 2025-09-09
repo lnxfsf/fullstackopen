@@ -4,6 +4,7 @@ import About from "./components/About";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import CreateNew from "./components/CreateNew";
 import AnecdoteList from "./components/AnecdoteList";
+import AnecdoteDetails from "./components/AnecdoteDetails";
 
 const Menu = () => {
   const padding = {
@@ -74,6 +75,7 @@ const App = () => {
           <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
           <Route path="/about" element={<About />} />
           <Route path="/create" element={<CreateNew addNew={addNew} />} />
+          <Route path="/anecdotes/:id" element={<AnecdoteDetails anecdotes={anecdotes} />} />
         </Routes>
 
         <Footer />
