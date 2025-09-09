@@ -21,12 +21,12 @@ const CreateNew = ({addNew, setNotification}) => {
     e.preventDefault()
 
     addNew({
-      content: content.value,
-      author: author.value,
-      info: info.value,
+      content: content.inputProps.value,
+      author: author.inputProps.value,
+      info: info.inputProps.value,
       votes: 0
     })
-    setNotification(`a new anecdote ${content.value} created!`)
+    setNotification(`a new anecdote ${content.inputProps.value} created!`)
     setTimeout(() => {
       setNotification('')
     }, 5000)
@@ -39,15 +39,15 @@ const CreateNew = ({addNew, setNotification}) => {
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input name='content' {...content} />
+          <input name='content' {...content.inputProps} />
         </div>
         <div>
           author
-          <input name='author' {...author} />
+          <input name='author' {...author.inputProps} />
         </div>
         <div>
           url for more info
-          <input name='info' {...info} />
+          <input name='info' {...info.inputProps} />
         </div>
         <div>
         <button>create</button>
