@@ -49,7 +49,15 @@ const CreateNew = ({addNew, setNotification}) => {
           url for more info
           <input name='info' {...info} />
         </div>
+        <div>
         <button>create</button>
+          <button type="button" onClick={() => {
+            content.reset()
+            author.reset()
+            info.reset()
+          }}>reset</button>
+
+        </div>
       </form>
     </div>
   )
